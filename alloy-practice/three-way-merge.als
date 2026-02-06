@@ -72,8 +72,8 @@ fact TreeAcyclic {
   all t: Tree | t not in t.^(entries.object :> Tree)
 }
 
--- ファイルの内容を表すブロブオブジェクトおよびタグオブジェクト
--- マージの検証においては内容は考慮しない
+-- ファイル内容を表すブロブオブジェクトおよびタグオブジェクト
+-- マージの検証においてはファイル内容は考慮しない
 -- ref. https://github.com/git/git/blob/b2826b52eb7caff9f4ed6e85ec45e338bf02ad09/object.h#L93-L109
 sig Blob extends Object {}
 sig Tag extends Object {}
