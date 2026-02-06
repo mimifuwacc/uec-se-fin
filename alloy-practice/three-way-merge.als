@@ -83,7 +83,7 @@ fun commonAncestors[c1, c2: Commit]: set Commit {
   c1.^parents & c2.^parents
 }
 
--- 最も近い共通祖先（マージベース）の抽出
+-- 最も近い共通祖先 (マージベース) の抽出
 fun mergeBases[c1, c2: Commit]: set Commit {
   let common = commonAncestors[c1, c2] |
   { ca: common | no other: common - ca | other in ca.^parents }
@@ -94,7 +94,7 @@ fun entryAt[t: Tree, p: Path]: lone NameEntry {
   { e: t.entries | e.path = p}
 }
 
--- 2つのエントリ集合が等しいかを判定（両方空，または両方同じエントリ）
+-- 2つのエントリ集合が等しいかを判定 (両方空，または両方同じエントリ) 
 pred entriesEqual[e1, e2: set NameEntry] {
   #e1 = #e2
   and
@@ -181,7 +181,7 @@ pred showSameChange {
       -- c1とc2が同じで，baseとは異なる
       entriesEqual[e1, e2] and
       not entriesEqual[e1, e_base] and
-      -- 結果はc1（c2）と同じで，そのパスは競合していない
+      -- 結果はc1 (c2) と同じで，そのパスは競合していない
       entriesEqual[e_res, e1] and
       p not in res.conflicts and
       -- 全体的にも競合はない
@@ -258,6 +258,7 @@ assert OneSideChangeAdopted {
       -- 結果はc2と同じで，かつ競合しない
       (entriesEqual[e_res, e2] and p not in res.conflicts)
 }
+
 -- 競合が発生したマージ
 pred showConflict {
   some b, c1, c2: Commit, res: MergeResult, p: Path | {
@@ -304,6 +305,7 @@ assert ConflictWhenDifferentChanges {
       -- そのパスは競合としてマークされている
       p in res.conflicts
 }
+
 run showSameChange for 6 but 3 Commit, 1 MergeResult
 check SameChangeAdopted for 6 but 3 Commit, 1 MergeResult
 

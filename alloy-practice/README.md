@@ -4,60 +4,59 @@
 
 ### Git
 
-Gitは分散型バージョン管理システムであり，ソフトウェア開発におけるソースコードの履歴管理を目的として開発された。Linuxカーネルの開発のために2005年にLinus Torvaldsによって作成された。
+Gitは分散型バージョン管理システムであり，ソフトウェア開発におけるソースコードの履歴管理を目的として開発された．Linuxカーネルの開発のために2005年にLinus Torvaldsによって作成された．
 
 Gitの主な特徴:
 
-- 分散型：各開発者がリポジトリの完全なコピーを持つ
-- ブランチとマージ：並行開発を支援する機能
-- 高速な操作：ほとんどの操作がローカルで実行される
-- コンテンツアドレス可能ストレージ：オブジェクトはSHA-1ハッシュで識別される
+- 分散型: 各開発者がリポジトリの完全なコピーを持つ
+- ブランチとマージ: 並行開発を支援する機能
+- コンテンツアドレス可能ストレージ: オブジェクトはSHA-1ハッシュで識別される
 
 **参考文献**:
 
-- Git公式ドキュメント: https://git-scm.com/doc
 - Gitソースコード: https://github.com/git/git
+- Git公式ドキュメント: https://git-scm.com/doc
 
-### 検証対象：3-wayマージアルゴリズム
+### 検証対象: 3-wayマージアルゴリズム
 
-Gitのマージ機能は，複数の開発者の変更を統合する際に使用される重要な機能である。特に3-wayマージは，以下の3つのコミットを比較してマージを行う：
+Gitのマージ機能は，複数の開発者の変更を統合する際に使用される重要な機能である．特に3-wayマージは，以下の3つのコミットを比較してマージを行う:
 
 - **マージベース (base)**: 両方のブランチの共通祖先
 - **コミット1 (c1)**: 一方のブランチの先頭
 - **コミット2 (c2)**: もう一方のブランチの先頭
 
-このアルゴリズムは，Gitの`merge-ort.c`（ORT = Ostensibly Recursive Tactics）で実装されている。
+このアルゴリズムは，Gitの`merge-ort.c` (ORT = Ostensibly Recursive Tactics) で実装されている．
 
 ## 検証すべき性質
 
-Gitの3-wayマージアルゴリズムにおいて，以下の3つの性質が正しく保たれることを検証する。
+Gitの3-wayマージアルゴリズムにおいて，以下の3つの性質が正しく保たれることを検証する．
 それぞれの性質の妥当性については，[Git公式ドキュメント](https://git-scm.com/book/ja/v2/Git-%E3%81%AE%E3%83%96%E3%83%A9%E3%83%B3%E3%83%81%E6%A9%9F%E8%83%BD-%E3%83%96%E3%83%A9%E3%83%B3%E3%83%81%E3%81%A8%E3%83%9E%E3%83%BC%E3%82%B8%E3%81%AE%E5%9F%BA%E6%9C%AC) を根拠とした．
 
 ### 1. 両側が同じ変更を行った場合の性質
 
-**性質**: 両方のブランチが同じ変更を行った場合，その変更がマージ結果に採用され，競合は発生しない。
+**性質**: 両方のブランチが同じ変更を行った場合，その変更がマージ結果に採用され，競合は発生しない．
 
 **例**:
 
 - base: ファイル`foo.txt`に`"Hello"`と記述
 - c1: `"Hello"`を`"Hello, World!"`に変更
-- c2: `"Hello"`を`"Hello, World!"`に変更（c1と同じ変更）
+- c2: `"Hello"`を`"Hello, World!"`に変更 (c1と同じ変更)
 - 期待される結果: `"Hello, World!"`が採用され，競合は発生しない
 
 ### 2. 片方のみが変更を行った場合の性質
 
-**性質**: 一方のブランチのみが変更を行い，もう一方が変更を行わなかった場合，その変更がマージ結果に採用され，競合は発生しない。
+**性質**: 一方のブランチのみが変更を行い，もう一方が変更を行わなかった場合，その変更がマージ結果に採用され，競合は発生しない．
 
 **例**:
 
 - base: ファイル`bar.txt`に`"v1.0"`と記述
-- c1: 変更なし（`"v1.0"`のまま）
+- c1: 変更なし (`"v1.0"`のまま)
 - c2: `"v1.0"`を`"v2.0"`に変更
 - 期待される結果: `"v2.0"`が採用され，競合なし
 
 ### 3. 両側が異なる変更を行った場合の性質
 
-**性質**: 両方のブランチが異なる変更を行った場合，競合が発生する。
+**性質**: 両方のブランチが異なる変更を行った場合，競合が発生する．
 Gitの実装では，さらにファイルの種類も考慮して自動でコンフリクトを解決する場合があるが，ここでは考慮しないものとする．
 
 **例**:
@@ -127,7 +126,7 @@ sig Tag extends Object {}
 
 #### ツリーエントリ
 
-Gitのツリーオブジェクトは，ファイルやサブディレクトリへの参照（エントリ）の集合である。
+Gitのツリーオブジェクトは，ファイルやサブディレクトリへの参照 (エントリ) の集合である．
 
 ```alloy
 -- ファイルモード
@@ -140,7 +139,7 @@ one sig Mode100644, Mode100755, Mode120000, Mode040000 extends Mode {}
 - `100644`: 通常のファイル
 - `100755`: 実行可能ファイル
 - `120000`: シンボリックリンク
-- `040000`: ディレクトリ（サブツリー）
+- `040000`: ディレクトリ (サブツリー)
 
 **Git実装との対応**: `tree-walk.h`内の`struct name_entry`
 
@@ -169,11 +168,11 @@ fact NameEntryTypeConstraint {
 }
 ```
 
-この制約は，Gitの実装において「ディレクトリ（mode 040000）はツリーオブジェクトを指し，ファイルはブロブオブジェクトを指す」という事実をモデル化している。
+この制約は，Gitの実装において「ディレクトリ (mode 040000) はツリーオブジェクトを指し，ファイルはブロブオブジェクトを指す」という事実をモデル化している．
 
 #### データ構造の条件
 
-Gitのリポジトリが満たすべき条件は以下の通りである。
+Gitのリポジトリが満たすべき条件は以下の通りである．
 
 ```alloy
 -- OIDは一意でなければならない
@@ -199,7 +198,7 @@ fact TreeAcyclic {
 
 ### マージベースの抽出
 
-3-wayマージでは，まず2つのコミットの「最も近い共通祖先」を見つける必要がある。
+3-wayマージでは，まず2つのコミットの「最も近い共通祖先」を見つける必要がある．
 
 ```alloy
 -- 2つのコミットの共通祖先の集合
@@ -207,7 +206,7 @@ fun commonAncestors[c1, c2: Commit]: set Commit {
   c1.^parents & c2.^parents
 }
 
--- 最も近い共通祖先（マージベース）
+-- 最も近い共通祖先 (マージベース)
 fun mergeBases[c1, c2: Commit]: set Commit {
   let common = commonAncestors[c1, c2] |
   { ca: common | no other: common - ca | other in ca.^parents }
@@ -233,7 +232,7 @@ sig MergeResult {
 
 #### エントリの等価性判定
 
-2つのエントリ集合が等しいかどうかを判定する述語：
+2つのエントリ集合が等しいかどうかを判定する述語:
 
 ```alloy
 -- 2つのエントリ集合が等しいかを判定
@@ -245,11 +244,11 @@ pred entriesEqual[e1, e2: set NameEntry] {
 ```
 
 - `#e1 = #e2`: 両方とも空，または両方とも1つのエントリを持つ
-- `no e1 or ...`: e1が空の場合，またはe1とe2の内容（モードとオブジェクト）が等しい場合
+- `no e1 or ...`: e1が空の場合，またはe1とe2の内容 (モードとオブジェクト) が等しい場合
 
 #### threeWayMerge関数
 
-3-wayマージの本体：
+3-wayマージの本体:
 
 ```alloy
 fun threeWayMerge[base, c1, c2: Commit]: lone MergeResult {
@@ -273,10 +272,10 @@ fun threeWayMerge[base, c1, c2: Commit]: lone MergeResult {
         -- ケース1: 両方が同じ状態
         (e1_eq_e2 and entriesEqual[e_res, e1] and p not in res.conflicts)
         or
-        -- ケース2: c1がベースと同じ（c2だけ変更）
+        -- ケース2: c1がベースと同じ (c2だけ変更)
         (e1_eq_base and not e2_eq_base and entriesEqual[e_res, e2] and p not in res.conflicts)
         or
-        -- ケース3: c2がベースと同じ（c1だけ変更）
+        -- ケース3: c2がベースと同じ (c1だけ変更)
         (e2_eq_base and not e1_eq_base and entriesEqual[e_res, e1] and p not in res.conflicts)
         or
         -- ケース4: 両側がbaseと異なり，互いにも異なる
@@ -288,299 +287,233 @@ fun threeWayMerge[base, c1, c2: Commit]: lone MergeResult {
 
 #### Git実装との対応
 
-このモデルはGitの`merge-ort.c`の`process_entry()`関数内の`match_mask`によるケース分けに対応している。
+このモデルはGitの`merge-ort.c`の`process_entry()`関数内の`match_mask`によるケース分けに対応している．
+cf. https://github.com/git/git/blob/b2826b52eb7caff9f4ed6e85ec45e338bf02ad09/merge-ort.c#L4190-L4210
 
-```c
-// merge-ort.c L4190-L4210 より抜粋
-unsigned match_mask = 0;
-if (ci->match_mask & 1) // MERGE_BASE
-    match_mask |= 1;
-if (ci->match_mask & 2) // MERGE_SIDE1
-    match_mask |= 2;
-if (ci->match_mask & 4) // MERGE_SIDE2
-    match_mask |= 4;
+Alloyモデルの4つのケースは，この`match_mask`の値に対応している:
 
-/* match_mask:
- * 0 (000): 全て異なる → 競合
- * 3 (011): baseとside1のみが同じ → side2を採用
- * 5 (101): baseとside2のみが同じ → side1を採用
- * 6 (110): side1とside2が同じ → その内容を採用
- */
-```
-
-Alloyモデルの4つのケースは，この`match_mask`の値に対応している：
-
-| Alloyモデルの条件                       | match_mask | マージ結果 |
-| --------------------------------------- | ---------- | ---------- |
-| `e1_eq_e2`                              | 6 (110)    | e1を採用   |
-| `e1_eq_base ∧ ¬e2_eq_base`              | 3 (011)    | e2を採用   |
-| `e2_eq_base ∧ ¬e1_eq_base`              | 5 (101)    | e1を採用   |
-| `¬e1_eq_e2 ∧ ¬e1_eq_base ∧ ¬e2_eq_base` | 0 (000)    | 競合       |
+| Alloyモデルの条件                                    | match_mask | マージ結果 |
+| ---------------------------------------------------- | ---------- | ---------- |
+| `e1_eq_e2`                                           | 6 (110)    | e1を採用   |
+| `e1_eq_base and not e2_eq_base`                      | 3 (011)    | e2を採用   |
+| `e2_eq_base and not e1_eq_base`                      | 5 (101)    | e1を採用   |
+| `not e1_eq_e2 and not e1_eq_base and not e2_eq_base` | 0 (000)    | 競合       |
 
 ## 検証手法
 
-### 概要
+### 検証の考え方
 
-Alloyの`assert`と`check`コマンドを使用して，3-wayマージアルゴリズムが満たすべき性質を検証する。各assertionについて，Alloy Analyzerによって反例が存在しないかを探索し，モデルの正当性を確認する。
+3-wayマージアルゴリズムの正しさを検証するため，以下の方針でモデル化と検証を行った．
 
-### 検証する性質と対応するAlloyコード
+#### モデル化における抽象化の方針
 
-#### 1. SameChangeAdopted：両側が同じ変更なら採用
+Gitの実際の実装では，ファイルの内容 (テキスト，バイナリ) や行単位のdiffなど，多くの詳細情報を扱う．しかし，**3-wayマージの基本的な振る舞いは，各パスについてbase・c1・c2の3つの状態を比較し，それに基づいて結果を決定すること**である．
 
-**検証する性質**: 両方のブランチが同じ状態であれば，マージ結果もその状態になり，競合しない。
+そこで，本モデルでは以下の抽象化を行った:
 
-**Alloyコード**:
+1. **ファイル内容の省略**: Blobオブジェクトを識別子のみで表現し，内容 (文字列) は扱わない
+2. **エントリ単位での比較**: ファイル内容の詳細な差分ではなく，NameEntry (mode + object) の等価性のみで判定
+3. **パス単位での独立性**: 各パスは独立にマージ判定される (実際のGitでも基本的にはパス単位で判定される)
+
+この抽象化により，「検証すべき性質」で述べた具体例 (`"Hello"` → `"Hello, World!"`など) は以下のように対応する:
+
+| 検証すべき性質の例                  | Alloyモデルでの表現                   |
+| ----------------------------------- | ------------------------------------- |
+| `foo.txt`の内容`"Hello"`            | パス`p`に対応するBlob `b1`            |
+| `"Hello"` → `"Hello, World!"`の変更 | Blob `b1`から`b2`への変更 (異なるOID) |
+| 両ブランチが同じ変更                | c1とc2で同じBlob `b2`を参照           |
+| 両ブランチが異なる変更              | c1は`b2`，c2は`b3`を参照 (`b2 ≠ b3`)  |
+
+**抽象化の妥当性**:
+
+- Gitの実装 (`merge-ort.c`の`process_entry()`) も，まずエントリレベルでの比較 (match_mask) を行い，その後に必要に応じてファイル内容のマージを実行する
+- エントリレベルでの判定ロジックが正しければ，ファイル内容の詳細を考慮しなくても3-wayマージの基本的な性質は検証できる
+
+### 検証する性質と対応するAlloyスクリプト
+
+#### 1. SameChangeAdopted: 両側が同じ変更なら採用
+
+**検証すべき性質 (再掲)**:
+
+両方のブランチが同じ変更を行った場合，その変更がマージ結果に採用され，競合は発生しない．
+
+**検証の考え方**:
+
+この性質は，Gitの`match_mask == 6 (110)`のケースに対応する．すなわち，side1とside2のエントリが一致する場合である．
+
+検証すべき性質の例:
+
+- base: `foo.txt`に`"Hello"`
+- c1: `"Hello"` → `"Hello, World!"`
+- c2: `"Hello"` → `"Hello, World!"` (c1と同じ変更)
+- 期待: `"Hello, World!"`が採用され，競合なし
+
+Alloyモデルでは:
+
+- base: パス`p`にBlob `b1`のエントリ
+- c1: パス`p`にBlob `b2`のエントリ (`b2 ≠ b1`)
+- c2: パス`p`にBlob `b2`のエントリ (c1と同じ)
+- 期待: マージ結果のパス`p`もBlob `b2`のエントリで，`p not in res.conflicts`
+
+**Alloyスクリプト**:
 
 ```alloy
+-- 検証: 両側が同じ変更なら，その変更が採用され競合しない
 assert SameChangeAdopted {
   all b, c1, c2: Commit, res: MergeResult, p: Path |
-    -- 前提条件
-    (b in mergeBases[c1, c2] and
-     res = threeWayMerge[b, c1, c2] and
-     p in (c1.tree.entries.path + c2.tree.entries.path + b.tree.entries.path))
+    (
+      b in mergeBases[c1, c2] and
+      res = threeWayMerge[b, c1, c2] and
+      -- パス p が少なくともマージ対象のいずれかに存在する場合のみを考える
+      p in (c1.tree.entries.path + c2.tree.entries.path + b.tree.entries.path)
+    )
     implies
+
     let e1 = entryAt[c1.tree, p],
         e2 = entryAt[c2.tree, p],
         e_res = entryAt[res.tree, p] |
-      -- 結論：e1とe2が等しいなら，結果もe1と等しく，競合しない
-      entriesEqual[e1, e2] implies
+
+      -- c1とc2が同じ状態であれば
+      entriesEqual[e1, e2]
+      implies
+      -- 結果もそれと同じになり，かつ競合リストに含まれない
       (entriesEqual[e_res, e1] and p not in res.conflicts)
 }
 ```
 
-**論理構造**:
+**「検証すべき性質」との対応**:
 
-- 前提：bがc1とc2のマージベースであり，resがその3-wayマージの結果である
-- 結論：任意のパスpについて，c1とc2のエントリが等しければ，マージ結果のエントリもそれと等しく，pは競合しない
+- assertの前提条件: `b in mergeBases[c1, c2]`により，bがマージベースであることを保証
+- assertの結論部分: `entriesEqual[e1, e2] implies (entriesEqual[e_res, e1] and p not in res.conflicts)`
+  - `entriesEqual[e1, e2]`: 「両方のブランチが同じ変更」に対応
+  - `entriesEqual[e_res, e1]`: 「その変更がマージ結果に採用」に対応
+  - `p not in res.conflicts`: 「競合は発生しない」に対応
 
-**検証コマンド**:
+#### 2. OneSideChangeAdopted: 片方のみ変更なら採用
+
+**検証すべき性質 (再掲)**: 一方のブランチのみが変更を行い，もう一方が変更を行わなかった場合，その変更がマージ結果に採用され，競合は発生しない．
+
+**検証の考え方**:
+
+この性質は，Gitの`match_mask == 3 (011)`または`match_mask == 5 (101)`のケースに対応する．すなわち，片方のブランチのみがbaseと異なる場合である．
+
+検証すべき性質の例:
+
+- base: `bar.txt`に`"v1.0"`
+- c1: 変更なし (`"v1.0"`のまま)
+- c2: `"v1.0"` → `"v2.0"`
+- 期待: `"v2.0"`が採用され，競合なし
+
+Alloyモデルでは:
+
+- base: パス`p`にBlob `b1`のエントリ
+- c1: パス`p`にBlob `b1`のエントリ (baseと同じ)
+- c2: パス`p`にBlob `b2`のエントリ (`b2 ≠ b1`)
+- 期待: マージ結果のパス`p`はBlob `b2`のエントリで，`p not in res.conflicts`
+
+**Alloyスクリプト**:
 
 ```alloy
-check SameChangeAdopted for 6 but 3 Commit, 1 MergeResult
-```
-
-**結果**: 反例なし（スコープ6，3コミット，1マージ結果において）
-
-#### 2. OneSideChangeAdopted：片方のみ変更なら採用
-
-**検証する性質**: 一方のブランチのみが変更を行った場合，その変更がマージ結果に採用され，競合しない。
-
-**Alloyコード**:
-
-```alloy
+-- 検証: 片方だけ変更された場合，その変更が採用され競合しない
 assert OneSideChangeAdopted {
   all b, c1, c2: Commit, res: MergeResult, p: Path |
-    -- 前提条件
-    (b in mergeBases[c1, c2] and
-     res = threeWayMerge[b, c1, c2] and
-     p in (c1.tree.entries.path + c2.tree.entries.path + b.tree.entries.path))
+    (
+      b in mergeBases[c1, c2] and
+      res = threeWayMerge[b, c1, c2] and
+      -- パス p が少なくともマージ対象のいずれかに存在する場合のみを考える
+      p in (c1.tree.entries.path + c2.tree.entries.path + b.tree.entries.path)
+    )
     implies
+
     let e_base = entryAt[b.tree, p],
         e1 = entryAt[c1.tree, p],
         e2 = entryAt[c2.tree, p],
         e_res = entryAt[res.tree, p] |
-      -- 結論：e1がbaseと同じでe2が異なるなら，結果はe2と等しく，競合しない
-      (entriesEqual[e1, e_base] and not entriesEqual[e2, e_base]) implies
+
+      -- c1がbaseと同じでc2が異なる場合
+      (entriesEqual[e1, e_base] and not entriesEqual[e2, e_base])
+      implies
+      -- 結果はc2と同じで，かつ競合しない
       (entriesEqual[e_res, e2] and p not in res.conflicts)
 }
 ```
 
-**論理構造**:
+**「検証すべき性質」との対応**:
 
-- 前提：SameChangeAdoptedと同じ
-- 結論：c1がbaseと同じでc2が異なる場合，マージ結果はc2と等しく，pは競合しない
+- assertの結論部分: `(entriesEqual[e1, e_base] and not entriesEqual[e2, e_base]) implies (entriesEqual[e_res, e2] and p not in res.conflicts)`
+  - `entriesEqual[e1, e_base]`: 「c1が変更を行わなかった」に対応
+  - `not entriesEqual[e2, e_base]`: 「c2が変更を行った」に対応
+  - `entriesEqual[e_res, e2]`: 「その変更 (c2の変更) がマージ結果に採用」に対応
+  - `p not in res.conflicts`: 「競合は発生しない」に対応
 
-**検証コマンド**:
+**注**: このassertは`c1がbaseと同じ`のケースのみを検証しているが，`threeWayMerge`関数は対称的に定義されているため，`c2がbaseと同じ`のケースも同様に保証される (`match_mask == 5`のケース) ．
+
+#### 3. ConflictWhenDifferentChanges: 両側が異なる変更なら競合
+
+**検証すべき性質 (再掲)**: 両方のブランチが異なる変更を行った場合，競合が発生する．
+
+**検証の考え方**:
+
+この性質は，Gitの`match_mask == 0 (000)`のケースに対応する．すなわち，3つの状態 (base, side1, side2) がすべて異なる場合である．
+
+検証すべき性質の例:
+
+- base: `version.txt`に`"1.0"`
+- c1: `"1.0"` → `"2.0"`
+- c2: `"1.0"` → `"3.0"`
+- 期待: 競合が発生
+
+Alloyモデルでは:
+
+- base: パス`p`にBlob `b1`のエントリ
+- c1: パス`p`にBlob `b2`のエントリ (`b2 ≠ b1`)
+- c2: パス`p`にBlob `b3`のエントリ (`b3 ≠ b1` かつ `b3 ≠ b2`)
+- 期待: `p in res.conflicts`
+
+**Alloyスクリプト**:
 
 ```alloy
-check OneSideChangeAdopted for 6 but 3 Commit, 1 MergeResult
-```
-
-**結果**: 反例なし（スコープ6，3コミット，1マージ結果において）
-
-#### 3. ConflictWhenDifferentChanges：両側が異なる変更なら競合
-
-**検証する性質**: 両方のブランチがベースと異なる変更を行い，かつ互いの変更も異なる場合，競合が発生する。
-
-**Alloyコード**:
-
-```alloy
+-- 検証: 両側が異なる変更なら競合が発生する
 assert ConflictWhenDifferentChanges {
   all b, c1, c2: Commit, res: MergeResult, p: Path |
-    -- 前提条件
-    (b in mergeBases[c1, c2] and
-     res = threeWayMerge[b, c1, c2] and
-     p in (c1.tree.entries.path + c2.tree.entries.path + b.tree.entries.path))
+    (
+      b in mergeBases[c1, c2] and
+      res = threeWayMerge[b, c1, c2] and
+      -- パス p が少なくともマージ対象のいずれかに存在する場合のみを考える
+      p in (c1.tree.entries.path + c2.tree.entries.path + b.tree.entries.path)
+    )
     implies
+
     let e_base = entryAt[b.tree, p],
         e1 = entryAt[c1.tree, p],
         e2 = entryAt[c2.tree, p] |
-      -- 結論：e1とe2がbaseと異なり，かつe1とe2も異なるなら，pは競合する
-      (not entriesEqual[e1, e_base] and
-       not entriesEqual[e2, e_base] and
-       not entriesEqual[e1, e2]) implies
+
+      -- 両側がbaseと異なり，かつ両側の変更も異なる場合
+      (
+        not entriesEqual[e1, e_base] and
+        not entriesEqual[e2, e_base] and
+        not entriesEqual[e1, e2]
+      )
+      implies
+      -- そのパスは競合としてマークされている
       p in res.conflicts
 }
 ```
 
-**論理構造**:
+**「検証すべき性質」との対応**:
 
-- 前提：SameChangeAdoptedと同じ
-- 結論：c1とc2がbaseと異なり，かつc1とc2も異なる場合，pは競合としてマークされる
-
-**検証コマンド**:
-
-```alloy
-check ConflictWhenDifferentChanges for 6 but 3 Commit, 1 MergeResult
-```
-
-**結果**: 反例なし（スコープ6，3コミット，1マージ結果において）
+- assertの結論部分: `(not entriesEqual[e1, e_base] and not entriesEqual[e2, e_base] and not entriesEqual[e1, e2]) implies p in res.conflicts`
+  - `not entriesEqual[e1, e_base]`: 「c1がbaseと異なる変更を行った」に対応
+  - `not entriesEqual[e2, e_base]`: 「c2がbaseと異なる変更を行った」に対応
+  - `not entriesEqual[e1, e2]`: 「c1とc2の変更が異なる」に対応
+  - `p in res.conflicts`: 「競合が発生する」に対応
 
 ### スコープの設定
 
-検証にはスコープ「`for 6 but 3 Commit, 1 MergeResult`」を使用している：
+検証にはスコープ「`for 6 but 3 Commit, 1 MergeResult`」を使用している:
 
 - `for 6`: 各シグネチャのインスタンス数を最大6個に制限
-  - すべてのシグネチャ（OID, Object, Commit, Tree, Blob, Tag, Path, NameEntry, Mode, MergeResult）に適用
 - `but 3 Commit`: Commitインスタンスを最大3個に制限
   - base, c1, c2の3つのコミットを表現するのに十分
 - `1 MergeResult`: MergeResultインスタンスをちょうど1個に制限
   - マージ結果は1つだけ存在すれば十分
-
-このスコープ設定により：
-
-- 計算量を適切に制御しつつ，意味のある検証が可能
-- 3コミットのマージシナリオを十分に表現できる
-- 反例探索の計算時間を現実的な範囲に収める
-
-### 例の生成
-
-assertionの検証に加え，`pred`と`run`コマンドを使用して各シナリオの具体例を生成する。
-
-```alloy
--- 両方が同じ変更を加えたマージの例
-pred showSameChange {
-  some b, c1, c2: Commit, res: MergeResult, p: Path | {
-    b in mergeBases[c1, c2]
-    res = threeWayMerge[b, c1, c2]
-    p in (b.tree.entries.path + c1.tree.entries.path + c2.tree.entries.path)
-
-    let e_base = entryAt[b.tree, p],
-        e1 = entryAt[c1.tree, p],
-        e2 = entryAt[c2.tree, p],
-        e_res = entryAt[res.tree, p] |
-
-      entriesEqual[e1, e2] and
-      not entriesEqual[e1, e_base] and
-      entriesEqual[e_res, e1] and
-      p not in res.conflicts and
-      not some res.conflicts
-  }
-}
-
-run showSameChange for 6 but 3 Commit, 1 MergeResult
-```
-
-同様に，`showOneSideChange`（片方のみ変更）と`showConflict`（競合発生）のpredを定義し，具体例を生成する。
-
-これにより：
-
-- Alloy Analyzerのビジュアライザでマージの様子を視覚的に確認できる
-- モデルが意図した通りの挙動をしているかを検証できる
-
-## 補足事項
-
-### 使用方法
-
-#### Alloy Analyzerのインストール
-
-1. [Alloy Analyzer](https://alloytools.org/)にアクセス
-2. 最新版をダウンロード（今回はAlloy 5.0.0を使用）
-3. インストーラーに従ってインストール
-
-#### 実行手順
-
-1. Alloy Analyzerを起動
-2. メニューから `File → Open` を選択し，`a.als`ファイルを開く
-3. 以下のコマンドを実行：
-
-**検証を行う場合（assertionのチェック）**:
-
-```
-check SameChangeAdopted for 6 but 3 Commit, 1 MergeResult
-check OneSideChangeAdopted for 6 but 3 Commit, 1 MergeResult
-check ConflictWhenDifferentChanges for 6 but 3 Commit, 1 MergeResult
-```
-
-**例を生成する場合（predicateの実行）**:
-
-```
-run showSameChange for 6 but 3 Commit, 1 MergeResult
-run showOneSideChange for 6 but 3 Commit, 1 MergeResult
-run showConflict for 6 but 3 Commit, 1 MergeResult
-```
-
-#### ビジュアライザの使い方
-
-Alloy Analyzerのビジュアライザでは：
-
-- **グラフ表示**: コミットグラフの構造を確認できる
-- **テーブル表示**: 各シグネチャのインスタンス一覧を確認できる
-- **詳細パネル**: 各オブジェクトの属性値を確認できる
-
-特に，以下を確認すると理解が深まる：
-
-- `MergeResult`ノードを選択し，`tree`属性と`conflicts`属性を確認
-- 各`Commit`ノードの`tree`属性を辿り，ツリー構造を確認
-- `NameEntry`テーブルで，どのパスが競合しているかを確認
-
-### ファイル構成
-
-本リポジトリの`alloy-practice`ディレクトリには以下のファイルが含まれる：
-
-- `a.als`: Alloyモデルの本体
-  - Gitオブジェクトモデルの定義
-  - 3-wayマージアルゴリズムの実装
-  - 3つのassertion（SameChangeAdopted, OneSideChangeAdopted, ConflictWhenDifferentChanges）
-  - 3つのpredicate（showSameChange, showOneSideChange, showConflict）
-
-### モデルの制約と簡略化
-
-本研究では以下の点を簡略化している：
-
-1. **ファイルの内容**: ブロブオブジェクトの中身はモデル化していない
-   - マージにおいてファイルの内容そのものではなく，オブジェクトの同一性に焦点を当てているため
-
-2. **高度なマージ戦略**: Gitの実装には含まれる以下の機能はモデル化していない
-   - リネーム検出
-   - ファイル種類に基づく自動競合解決
-   - content merge（テキスト行単位のマージ）
-   - サブモジュール（mode 160000）のサポート
-
-3. **スコープの制限**: 検証は小さなスコープ（最大6オブジェクト）で行っている
-   - 実際のリポジトリははるかに大規模だが，形式的検証では小さいスコープでの反例探索が一般的
-
-### 今後の拡張可能性
-
-このモデルをベースに，以下の拡張が考えられる：
-
-1. **content mergeのモデル化**: テキストファイルの行単位マージの検証
-2. **リネーム検出のモデル化**: ファイル名変更を考慮したマージ
-3. **マージ戦略の比較**: recursive戦略とort戦略の形式的検証
-4. **パフォーマンス特性**: マージの計算複雑性の分析
-
-### 参考文献
-
-- Gitソースコード（コミットハッシュ: b2826b52eb7caff9f4ed6e85ec45e338bf02ad09）
-  - `merge-ort.c`: L4064-L4358, `process_entry()`関数
-  - `merge-ort.c`: L4190-L4210, `match_mask`によるケース分け
-  - `tree-walk.h`: ツリーオブジェクト構造の定義
-  - `object.h`: L93-L109, オブジェクト型定義
-
-- Gitドキュメント
-  - Git公式ドキュメント: https://git-scm.com/doc
-  - Git Merge Strategies: https://git-scm.com/docs/merge-strategies
-
-- Alloy関連
-  - Alloy公式サイト: https://alloytools.org/
-  - Daniel Jackson, "Software Abstractions: Logic, Language, and Analysis", MIT Press, 2012
