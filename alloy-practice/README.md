@@ -25,7 +25,7 @@ Gitのマージ機能は，複数の開発者の変更を統合する際に使�
 - **コミット1 (c1)**: 一方のブランチの先頭
 - **コミット2 (c2)**: もう一方のブランチの先頭
 
-このアルゴリズムは，Gitの`merge-ort.c` (ORT = Ostensibly Recursive Tactics) で実装されている．
+このアルゴリズムは，Gitの`merge-ort.c` (Ostensibly Recursive Tactics) で実装されている．
 
 ## 検証すべき性質
 
@@ -99,8 +99,8 @@ sig Commit extends Object {
 **Git実装との対応**:
 
 - `OID` → GitのオブジェクトID
-- `Object` → `struct object_id` (object.h)
-- `Commit` → `struct commit` (commit.h)
+- `Object` → `struct object_id` (`object.h`)
+- `Commit` → `struct commit` (`commit.h`)
   - `tree` → `*maybe_tree;` (Gitの実装では遅延読み込みのために `NULL` となることもあるがここでは考慮しない)
   - `parents` → `struct commit_list *parents` (親コミットのリスト)
 
